@@ -1,10 +1,9 @@
-package com.example.chat_room;
+package com.example.chatroom;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 
 @Configuration
 public class WebConfig {

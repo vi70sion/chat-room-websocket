@@ -1,4 +1,4 @@
-package com.example.chat_room;
+package com.example.chatroom;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
