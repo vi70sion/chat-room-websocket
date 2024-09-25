@@ -1,4 +1,4 @@
-package com.example.chat_room;
+package com.example.chatroom;
 
 public class Message {
     private String name;
