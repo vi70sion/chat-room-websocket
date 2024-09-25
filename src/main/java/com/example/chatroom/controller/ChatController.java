@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.example.chatroom.model.ChatMessage;
+import com.example.chatroom.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Controller;
 public class ChatController {
 
     private final SimpMessagingTemplate messagingTemplate;
+    MessageService messageService = new MessageService();
     private final List<ChatMessage> messages = new ArrayList<>();
     private final List<String> users = new ArrayList<>();
 
@@ -28,6 +30,7 @@ public class ChatController {
     public ChatMessage sendMessage(ChatMessage message) {
         message.setSentAt(LocalDateTime.now());
         messages.add(message);
+        messageService.addMessage(message);
         return message;
     }
 
@@ -36,7 +39,9 @@ public class ChatController {
     public List<String> addUser(String username) {
         if (!users.contains(username)) {
             users.add(username);
-            messagingTemplate.convertAndSend("/topic/messages", new ChatMessage("SYSTEM", username + " has joined the chat", LocalDateTime.now()));
+            ChatMessage message = new ChatMessage("SYSTEM", username + " has joined the chat", LocalDateTime.now());
+            messageService.addMessage(message);
+            messagingTemplate.convertAndSend("/topic/messages", message);
         }
         return users;
     }
@@ -45,7 +50,9 @@ public class ChatController {
     @SendTo("/topic/users")
     public List<String> removeUser(String username) {
         users.remove(username);
-        messagingTemplate.convertAndSend("/topic/messages", new ChatMessage("SYSTEM", username + " has left the chat", LocalDateTime.now()));
+        ChatMessage message = new ChatMessage("SYSTEM", username + " has left the chat", LocalDateTime.now());
+        messageService.addMessage(message);
+        messagingTemplate.convertAndSend("/topic/messages", message);
         return users;
     }
 
