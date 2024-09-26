@@ -8,22 +8,9 @@ import io.jsonwebtoken.JwtException;
 public class UserService {
     UserRepository userRepository = new UserRepository();
 
-    public int checkClient(User user) {
+    public long checkClient(User user) {
         return userRepository.checkClient(user);
     }
 
-
-
-    public boolean authorize(String authorizationHeader){
-        try {
-            JwtDecoder.decodeJwt(authorizationHeader);
-        } catch (JwtException e) {
-            return false;
-        }
-        return true;
-    }
-    public boolean isTokenCorrect(String authorizationHeader){
-        return (authorizationHeader.length() < 20 || authorizationHeader == null || authorizationHeader.isEmpty()) ? false : true;
-    }
 
 }

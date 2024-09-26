@@ -22,7 +22,7 @@ public class UserController {
     @CrossOrigin
     @PostMapping("/chatroom/user/login")
     public ResponseEntity <Map<String, String>> checkClient(@RequestBody User user) {
-        int userId = userService.checkClient(user);
+        long userId = userService.checkClient(user);
         if (userId == -1) return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         String jwtToken = JwtGenerator.generateJwt(userId);
         Map<String, String> response = new HashMap<>();

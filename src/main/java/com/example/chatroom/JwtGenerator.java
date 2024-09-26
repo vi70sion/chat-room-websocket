@@ -21,8 +21,8 @@ public class JwtGenerator {
         Date exp = new Date(nowMillis + 120 * 60 * 1000); // 120 minutes
 
         String jwt = Jwts.builder()
-                .setIssuer("manokompanija.eu")
-                .setSubject("manokompanija.eu")
+                .setIssuer("chatRoom")
+                .setSubject("chatRoom")
                 .claim("UserId", userId)
                 .claim("DateOfLogin", new java.text.SimpleDateFormat("yyyy-MM-dd").format(now))
                 .setId(UUID.randomUUID().toString())
