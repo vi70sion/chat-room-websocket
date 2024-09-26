@@ -6,9 +6,13 @@ import java.util.List;
 
 import com.example.chatroom.model.ChatMessage;
 import com.example.chatroom.service.MessageService;
+import com.example.chatroom.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
 
@@ -27,7 +31,22 @@ public class ChatController {
 
     @MessageMapping("/chat")
     @SendTo("/topic/messages")
-    public ChatMessage sendMessage(ChatMessage message) {
+    public ChatMessage sendMessage(ChatMessage message, SimpMessageHeaderAccessor headerAccessor) {
+        String token = headerAccessor.getFirstNativeHeader("Authorization");
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7); // Remove "Bearer " prefix
+            boolean isValid = TokenService.validateToken(token);
+            if (!isValid) {
+                throw new RuntimeException("Invalid JWT Token");
+            }
+
+            // Optionally, extract user details from the token
+//            String usernameFromToken = jwtUtil.extractUsername(token);
+//            message.setSender(usernameFromToken); // Override sender with verified token user
+        } else {
+            throw new RuntimeException("Authorization header not found");
+        }
+
         message.setSentAt(LocalDateTime.now());
         messages.add(message);
         messageService.addMessage(message);

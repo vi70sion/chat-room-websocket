@@ -11,7 +11,7 @@ public class UserRepository {
     public UserRepository() {
     }
 
-    public int checkClient(User user) {
+    public long checkClient(User user) {
         try {
             sqlConnection();
             String sql = "SELECT * FROM users WHERE name = ? AND password = ?";
@@ -19,7 +19,7 @@ public class UserRepository {
             statement.setString(1, user.getName());
             statement.setString(2, user.getPassword());
             ResultSet resultSet = statement.executeQuery();
-            return (resultSet.next()) ? resultSet.getInt("user_id"): -1;
+            return (resultSet.next()) ? resultSet.getLong("user_id"): -1;
         } catch (SQLException e) {
             return -1;
         }
