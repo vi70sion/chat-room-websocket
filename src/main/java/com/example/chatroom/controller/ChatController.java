@@ -3,13 +3,10 @@ package com.example.chatroom.controller;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.example.chatroom.model.ChatMessage;
 import com.example.chatroom.service.MessageService;
 import com.example.chatroom.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
@@ -55,12 +52,20 @@ public class ChatController {
 
     @MessageMapping("/user")
     @SendTo("/topic/users")
-    public List<String> addUser(String username) {
+    public List<String> addUser(String username) throws InterruptedException {
+        username = username.replace("\"", "");
         if (!users.contains(username)) {
             users.add(username);
             ChatMessage message = new ChatMessage("SYSTEM", username + " has joined the chat", LocalDateTime.now());
             messageService.addMessage(message);
             messagingTemplate.convertAndSend("/topic/messages", message);
+
+            // get last 10 messeges and send to user
+            List<ChatMessage> lastTenMessages = messageService.getLastTenMesegesList();
+            for (ChatMessage item : lastTenMessages) {
+                Thread.sleep(5);
+                messagingTemplate.convertAndSend( "/queue/" + username + "/messages", item);
+            }
         }
         return users;
     }
