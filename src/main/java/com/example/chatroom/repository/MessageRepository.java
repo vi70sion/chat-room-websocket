@@ -1,17 +1,18 @@
 package com.example.chatroom.repository;
 
 import com.example.chatroom.model.ChatMessage;
-import com.example.chatroom.model.User;
-
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
 
 import static com.example.chatroom.Constants.*;
 
 public class MessageRepository {
 
     private static Connection _connection;
+    List<ChatMessage> messagesList;
     public MessageRepository() {
     }
 
@@ -30,7 +31,26 @@ public class MessageRepository {
         }
     }
 
-
+    public List<ChatMessage> getLastTenMesegesList(){
+        try {
+            ChatMessage message;
+            sqlConnection();
+            messagesList = new ArrayList<>();
+            String sql = "SELECT * FROM ( SELECT * FROM messages ORDER BY timestamp DESC LIMIT 10 ) AS last_ten ORDER BY timestamp ASC";
+            PreparedStatement statement = _connection.prepareStatement(sql);
+            ResultSet resultSet = statement.executeQuery();
+            while (resultSet.next()) {
+                message = new ChatMessage();
+                message.setSender(resultSet.getString("user_name"));
+                message.setContent(resultSet.getString("message_content"));
+                message.setSentAt(LocalDateTime.parse(resultSet.getString("timestamp"), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                messagesList.add(message);
+            }
+            return messagesList;
+        } catch (SQLException e) {
+            return new ArrayList<>();
+        }
+    }
 
 
     public static void sqlConnection() {

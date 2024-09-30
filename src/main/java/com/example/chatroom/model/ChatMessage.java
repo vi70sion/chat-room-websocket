@@ -7,6 +7,9 @@ public class ChatMessage {
     private String content;
     private LocalDateTime sentAt;
 
+    public ChatMessage() {
+    }
+
     public ChatMessage(String sender, String content, LocalDateTime sentAt) {
         this.sender = sender;
         this.content = content;
